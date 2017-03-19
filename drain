@@ -1,0 +1,40 @@
+local stableLevel = 1000
+local drainLevel = 5000
+
+local t = peripheral.wrap("back")
+local info = t.getTankInfo()
+
+if table.getn(info) < 2 then
+  print("No liquid in smeltery\n")
+end
+while table.getn(info) < 2 do 
+  info = t.getTankInfo()
+end
+
+local amount = info[1]["contents"]["amount"]
+
+redstone.setOutput("top", false)
+print("Starting amount: " .. amount .. "\n")
+
+while true do
+  sleep(0)
+  info = t.getTankInfo()
+  amount = info[1]["contents"]["amount"]
+  
+  if amount > drainLevel then
+    print("\nCurrent Level: " .. amount)
+    print("Draining...")
+    
+    while amount > stableLevel do
+      os.sleep(0)
+      redstone.setOutput("top", true)
+      info = t.getTankInfo()
+      amount = info[1]["contents"]["amount"]
+      -- print(amount)
+    end
+    
+    redstone.setOutput("top", false)
+    print("Finished draining.")
+    print("\nAmount remaining: " .. amount)
+  end
+end
